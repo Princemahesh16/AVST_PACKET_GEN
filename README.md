@@ -385,9 +385,11 @@ Verified using
 
 ---
 
-## Author
+## 👨‍💻 Author
 
-**Mahesh**
+**Princemahesh16**
+
+GitHub: https://github.com/Princemahesh16
 
 RTL Design | FPGA | Verilog HDL | Avalon-ST | FIFO Design
 
