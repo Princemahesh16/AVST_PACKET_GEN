@@ -1,0 +1,719 @@
+`timescale 1ns / 1ps
+
+// ============================================================================
+// Module 1: master_fsm
+// Description: Master packet generator matching image_7a9a87.png with 
+//              zero-gap packet streaming and registered output drive.
+// ============================================================================
+module master_fsm #(
+    parameter TOTAL_BYTES = 16384,
+    parameter BUS_BYTES   = 64,
+    parameter PACKET_SIZE = 256
+)(
+    input  wire         clk,
+    input  wire         rst,
+    input  wire         start,        // Explicit Start Pulse
+    input  wire         fifo_full,
+ 
+    output wire         fifo_wr_en,
+    output wire         busy,
+ 
+    output reg          valid,
+    output reg          sop,
+    output reg          eop,
+    output reg  [5:0]   empty,
+    output wire [511:0] data_out,
+    output reg          packet_done,
+ 
+    output reg  [15:0]  beat_count
+);
+ 
+    localparam BEATS_PER_PACK  = (PACKET_SIZE + BUS_BYTES - 1) / BUS_BYTES;
+    localparam TOTAL_PACKETS   = (TOTAL_BYTES + PACKET_SIZE - 1) / PACKET_SIZE;
+    localparam LAST_BEAT_BYTES = (PACKET_SIZE % BUS_BYTES == 0) ? BUS_BYTES : (PACKET_SIZE % BUS_BYTES);
+    localparam EMPTY_BYTES     = BUS_BYTES - LAST_BEAT_BYTES;
+ 
+    localparam S0_IDLE   = 3'b000;
+    localparam S2_FIRST  = 3'b010;
+    localparam S3_MIDDLE = 3'b011;
+    localparam S4_LAST   = 3'b100;
+    localparam S6_DONE   = 3'b110;
+ 
+    reg [2:0]   current_state, next_state;
+    reg [15:0]  packet_count;
+    reg [511:0] data_counter;
+    
+    reg [511:0] tx_data;
+    assign data_out = tx_data;
+ 
+    // Continuous write enable during active packet generation
+    assign fifo_wr_en = ((current_state == S2_FIRST)  || 
+                         (current_state == S3_MIDDLE) || 
+                         (current_state == S4_LAST)) && (!fifo_full);
+ 
+    wire tx_fire = fifo_wr_en;
+    assign busy = (current_state != S0_IDLE) && (current_state != S6_DONE);
+ 
+    always @(posedge clk) begin
+        if (rst)
+            current_state <= S0_IDLE;
+        else
+            current_state <= next_state;
+    end
+ 
+    // Next State Logic
+    always @(*) begin
+        next_state = current_state;
+ 
+        case (current_state)
+            S0_IDLE: begin
+                if (start) next_state = S2_FIRST;
+            end
+ 
+            S2_FIRST: begin
+                if (tx_fire) begin
+                    if (BEATS_PER_PACK == 1)
+                        next_state = (packet_count == TOTAL_PACKETS - 1) ? S6_DONE : S2_FIRST;
+                    else if (BEATS_PER_PACK == 2)
+                        next_state = S4_LAST;
+                    else
+                        next_state = S3_MIDDLE;
+                end
+            end
+ 
+            S3_MIDDLE: begin
+                if (tx_fire && beat_count == (BEATS_PER_PACK - 2))
+                    next_state = S4_LAST;
+            end
+ 
+            S4_LAST: begin
+                if (tx_fire) begin
+                    if (packet_count == (TOTAL_PACKETS - 1))
+                        next_state = S6_DONE;
+                    else
+                        next_state = S2_FIRST; // ZERO GAP: Jump straight to Beat 0
+                end
+            end
+ 
+            S6_DONE: begin
+                next_state = S0_IDLE;
+            end
+ 
+            default: next_state = S0_IDLE;
+        endcase
+    end
+ 
+    // Output Datapath Logic
+    always @(posedge clk) begin
+        if (rst) begin
+            beat_count   <= 16'd0;
+            packet_count <= 16'd0;
+            data_counter <= 512'd1;
+            tx_data      <= 512'd1;
+            valid        <= 1'b0;
+            sop          <= 1'b0;
+            eop          <= 1'b0;
+            empty        <= 6'd0;
+            packet_done  <= 1'b0;
+        end else begin
+            packet_done <= (tx_fire && (packet_count == TOTAL_PACKETS - 1) && (current_state == S4_LAST));
+ 
+            case (current_state)
+                S0_IDLE: begin
+                    valid <= 1'b0; sop <= 1'b0; eop <= 1'b0; empty <= 6'd0;
+                    beat_count   <= 16'd0; 
+                    packet_count <= 16'd0; 
+                    data_counter <= 512'd1;
+                    tx_data      <= 512'd1;
+                end
+ 
+                S2_FIRST: begin
+                    valid <= 1'b1; 
+                    sop   <= 1'b1; 
+                    eop   <= (BEATS_PER_PACK == 1) ? 1'b1 : 1'b0; 
+                    empty <= (BEATS_PER_PACK == 1) ? EMPTY_BYTES[5:0] : 6'd0;
+ 
+                    if (tx_fire) begin
+                        beat_count   <= (BEATS_PER_PACK == 1) ? 16'd0 : 16'd1;
+                        tx_data      <= data_counter;
+                        data_counter <= data_counter + 1'b1;
+                        if (BEATS_PER_PACK == 1)
+                            packet_count <= packet_count + 1'b1;
+                    end else begin
+                        tx_data      <= data_counter;
+                    end
+                end
+ 
+                S3_MIDDLE: begin
+                    valid <= 1'b1; 
+                    sop   <= 1'b0; 
+                    eop   <= 1'b0; 
+                    empty <= 6'd0;
+ 
+                    if (tx_fire) begin
+                        beat_count   <= beat_count + 1'b1;
+                        tx_data      <= data_counter;
+                        data_counter <= data_counter + 1'b1;
+                    end else begin
+                        tx_data      <= data_counter;
+                    end
+                end
+ 
+                S4_LAST: begin
+                    valid <= 1'b1; 
+                    sop   <= 1'b0; 
+                    eop   <= 1'b1; 
+                    empty <= EMPTY_BYTES[5:0];
+ 
+                    if (tx_fire) begin
+                        beat_count   <= 16'd0;
+                        tx_data      <= data_counter;
+                        data_counter <= data_counter + 1'b1;
+                        packet_count <= packet_count + 1'b1;
+                    end else begin
+                        tx_data      <= data_counter;
+                    end
+                end
+ 
+                S6_DONE: begin
+                    valid <= 1'b0; sop <= 1'b0; eop <= 1'b0; empty <= 6'd0;
+                    beat_count <= 16'd0;
+                end
+ 
+                default: begin
+                    valid <= 1'b0; sop <= 1'b0; eop <= 1'b0; empty <= 6'd0;
+                end
+            endcase
+        end
+    end
+
+endmodule
+
+
+// ============================================================================
+// Module 2: master_tx_read_fsm
+// Description: Zero-latency TX Read interface matching image_7a9aa3.png / 7a9ae2.png
+// ============================================================================
+module master_tx_read_fsm #(
+    parameter DATA_WIDTH = 512,
+    parameter EMPTY_W    = 6
+)(
+    input  wire                  clk,
+    input  wire                  rst,
+    
+    // TX FIFO Interface
+    input  wire                  fifo_empty,
+    output wire                  fifo_rd_en,
+    input  wire [DATA_WIDTH-1:0] fifo_rdata,
+    input  wire                  fifo_sop,
+    input  wire                  fifo_eop,
+    input  wire [EMPTY_W-1:0]    fifo_empty_bits,
+    input  wire                  fifo_valid,
+    
+    // Bus Interface
+    input  wire                  ready,
+    output reg                   valid,
+    output reg  [DATA_WIDTH-1:0] data,
+    output reg                   sop,
+    output reg                   eop,
+    output reg  [EMPTY_W-1:0]    empty
+);
+
+    assign fifo_rd_en = !fifo_empty && ready;
+
+    always @(posedge clk) begin
+        if (rst) begin
+            valid <= 1'b0;
+            data  <= {DATA_WIDTH{1'b0}};
+            sop   <= 1'b0;
+            eop   <= 1'b0;
+            empty <= {EMPTY_W{1'b0}};
+        end else if (fifo_rd_en) begin
+            valid <= fifo_valid;
+            data  <= fifo_rdata;
+            sop   <= fifo_sop;
+            eop   <= fifo_eop;
+            empty <= fifo_empty_bits;
+        end else begin
+            valid <= 1'b0;
+            sop   <= 1'b0;
+            eop   <= 1'b0;
+            empty <= {EMPTY_W{1'b0}};
+        end
+    end
+
+endmodule
+
+
+// ============================================================================
+// Module 3: master_top
+// Description: Master top module encapsulating Generator, FIFO, and Read FSM.
+// ============================================================================
+module master_top #(
+    parameter TOTAL_BYTES = 16384,
+    parameter BUS_BYTES   = 64,
+    parameter PACKET_SIZE = 256,
+    localparam DATA_WIDTH = BUS_BYTES * 8, // 512 bits
+    localparam EMPTY_W    = 6
+)(
+    input  wire                  clk,
+    input  wire                  rst,
+    input  wire                  start,
+    
+    output wire                  master_done,
+    
+    input  wire                  ready,
+    output wire                  valid,
+    output wire [DATA_WIDTH-1:0] data,
+    output wire                  sop,
+    output wire                  eop,
+    output wire [EMPTY_W-1:0]    empty,
+    output wire [15:0]           beat_count
+);
+
+    wire                  m_fifo_wr_en;
+    wire                  m_valid;
+    wire                  m_sop;
+    wire                  m_eop;
+    wire [EMPTY_W-1:0]    m_empty;
+    wire [DATA_WIDTH-1:0] m_data;
+    
+    wire f_full;
+    wire f_empty;
+    wire f_rd_en;
+
+    // 521-bit Bundle Packing [520:0]
+    wire [520:0] fifo_din  = {m_valid, m_empty, m_eop, m_sop, m_data};
+    wire [520:0] fifo_dout;
+
+    // 521-bit Bundle Unpacking
+    wire [DATA_WIDTH-1:0] f_rdata      = fifo_dout[511:0];
+    wire                  f_sop        = fifo_dout[512];
+    wire                  f_eop        = fifo_dout[513];
+    wire [EMPTY_W-1:0]    f_empty_bits = fifo_dout[519:514];
+    wire                  f_valid      = fifo_dout[520];
+
+    master_fsm #(
+        .TOTAL_BYTES (TOTAL_BYTES),
+        .BUS_BYTES   (BUS_BYTES),
+        .PACKET_SIZE (PACKET_SIZE)
+    ) u_master_fsm (
+        .clk         (clk),
+        .rst         (rst),
+        .start       (start),
+        .fifo_full   (f_full),
+        .fifo_wr_en  (m_fifo_wr_en),
+        .valid       (m_valid),
+        .sop         (m_sop),
+        .eop         (m_eop),
+        .empty       (m_empty),
+        .data_out    (m_data),
+        .busy        (),
+        .packet_done (master_done),
+        .beat_count  (beat_count)
+    );
+
+    fifo_generator_0 u_tx_fifo (
+        .clk   (clk),
+        .srst  (rst),
+        .din   (fifo_din),
+        .wr_en (m_fifo_wr_en),
+        .rd_en (f_rd_en),
+        .dout  (fifo_dout),
+        .full  (f_full),
+        .empty (f_empty)
+    );
+
+    master_tx_read_fsm #(
+        .DATA_WIDTH (DATA_WIDTH),
+        .EMPTY_W    (EMPTY_W)
+    ) u_master_tx_read_fsm (
+        .clk             (clk),
+        .rst             (rst),
+        .fifo_empty      (f_empty),
+        .fifo_rd_en      (f_rd_en),
+        .fifo_rdata      (f_rdata),
+        .fifo_sop        (f_sop),
+        .fifo_eop        (f_eop),
+        .fifo_empty_bits (f_empty_bits),
+        .fifo_valid      (f_valid),
+        .ready           (ready),
+        .valid           (valid),
+        .data            (data),
+        .sop             (sop),
+        .eop             (eop),
+        .empty           (empty)
+    );
+
+endmodule
+
+
+// ============================================================================
+// Module 4: slave_rx_write_fsm
+// Description: Zero-latency RX write logic matching image_7a9ac1.png
+// ============================================================================
+module slave_rx_write_fsm #(
+    parameter DATA_WIDTH = 512,
+    parameter EMPTY_W    = 6
+)(
+    input  wire                  clk,
+    input  wire                  rst,
+    
+    // Bus Inputs
+    input  wire                  valid,
+    input  wire [DATA_WIDTH-1:0] data,
+    input  wire                  sop,
+    input  wire                  eop,
+    input  wire [EMPTY_W-1:0]    empty,
+    output wire                  ready,
+    
+    // RX FIFO Interface
+    input  wire                  rx_fifo_full,
+    output wire                  rx_fifo_wr_en,
+    output wire [520:0]          rx_fifo_din
+);
+
+    assign ready         = !rx_fifo_full;
+    assign rx_fifo_wr_en = valid && ready;
+    assign rx_fifo_din   = {valid, empty, eop, sop, data};
+
+endmodule
+
+
+// ============================================================================
+// Module 5: slave_read_fsm
+// Description: Continuous RX read logic matching slave receive path.
+// ============================================================================
+module slave_read_fsm #(
+    parameter DATA_WIDTH = 512,
+    parameter EMPTY_W    = 6
+)(
+    input  wire                  clk,
+    input  wire                  rst,
+    
+    input  wire                  fifo_empty,
+    output wire                  fifo_rd_en,
+    input  wire [DATA_WIDTH-1:0] fifo_rdata,
+    input  wire                  fifo_sop,
+    input  wire                  fifo_eop,
+    input  wire [EMPTY_W-1:0]    fifo_empty_bits,
+    
+    input  wire                  slave_read_req,
+    output reg  [DATA_WIDTH-1:0] rx_payload_data,
+    output reg                   rx_data_valid,
+    output reg                   rx_sop,
+    output reg                   rx_eop,
+    output reg  [EMPTY_W-1:0]    rx_empty
+);
+
+    assign fifo_rd_en = slave_read_req && !fifo_empty;
+
+    always @(posedge clk) begin
+        if (rst) begin
+            rx_data_valid   <= 1'b0;
+            rx_payload_data <= {DATA_WIDTH{1'b0}};
+            rx_sop          <= 1'b0;
+            rx_eop          <= 1 meb;
+            rx_empty        <= {EMPTY_W{1'b0}};
+        end else begin
+            rx_data_valid <= fifo_rd_en;
+
+            if (fifo_rd_en) begin
+                rx_payload_data <= fifo_rdata;
+                rx_sop          <= fifo_sop;
+                rx_eop          <= fifo_eop;
+                rx_empty        <= fifo_empty_bits;
+            end else begin
+                rx_sop   <= 1'b0;
+                rx_eop   <= 1'b0;
+                rx_empty <= {EMPTY_W{1'b0}};
+            end
+        end
+    end
+
+endmodule
+
+
+// ============================================================================
+// Module 6: slave_top
+// Description: Slave top wrapper containing RX FIFO and Receiver FSMs.
+// ============================================================================
+module slave_top #(
+    parameter DATA_WIDTH = 512,
+    parameter EMPTY_W    = 6
+)(
+    input  wire                  clk,
+    input  wire                  rst,
+    
+    input  wire                  valid,
+    input  wire [DATA_WIDTH-1:0] data,
+    input  wire                  sop,
+    input  wire                  eop,
+    input  wire [EMPTY_W-1:0]    empty,
+    output wire                  ready,
+    
+    input  wire                  slave_read_req,
+    output wire [DATA_WIDTH-1:0] rx_payload_data,
+    output wire                  rx_data_valid,
+    output wire                  rx_sop,
+    output wire                  rx_eop,
+    output wire [EMPTY_W-1:0]    rx_empty,
+    output wire [15:0]           beat_count
+);
+
+    wire         rx_f_full;
+    wire         rx_f_empty;
+    wire         rx_f_wr_en;
+    wire         rx_f_rd_en;
+    wire [520:0] rx_f_din;
+    wire [520:0] rx_f_dout;
+
+    // Unpacking 521-bit RX FIFO Output
+    wire [DATA_WIDTH-1:0] f_rdata      = rx_f_dout[511:0];
+    wire                  f_sop        = rx_f_dout[512];
+    wire                  f_eop        = rx_f_dout[513];
+    wire [EMPTY_W-1:0]    f_empty_bits = rx_f_dout[519:514];
+    wire                  f_valid      = rx_f_dout[520];
+
+    // Startup Edge Detection
+    reg rx_data_valid_d;
+    always @(posedge clk) begin
+        if (rst) rx_data_valid_d <= 1'b0;
+        else     rx_data_valid_d <= rx_data_valid;
+    end
+    wire rx_stream_start = rx_data_valid && !rx_data_valid_d;
+
+    // Dynamic Parameter-Agnostic Beat Counter Logic
+    reg [15:0] rx_beat_cnt;
+    assign beat_count = (rx_sop || rx_stream_start) ? 16'd0 : rx_beat_cnt;
+
+    always @(posedge clk) begin
+        if (rst) begin
+            rx_beat_cnt <= 16'd0;
+        end else if (rx_data_valid) begin
+            if (rx_sop || rx_stream_start)
+                rx_beat_cnt <= 16'd1;
+            else if (rx_eop)
+                rx_beat_cnt <= 16'd0;
+            else
+                rx_beat_cnt <= rx_beat_cnt + 1'b1;
+        end else begin
+            rx_beat_cnt <= 16'd0;
+        end
+    end
+
+    slave_rx_write_fsm #(
+        .DATA_WIDTH (DATA_WIDTH),
+        .EMPTY_W    (EMPTY_W)
+    ) u_slave_rx_write_fsm (
+        .clk           (clk),
+        .rst           (rst),
+        .valid         (valid),
+        .data          (data),
+        .sop           (sop),
+        .eop           (eop),
+        .empty         (empty),
+        .ready         (ready),
+        .rx_fifo_full  (rx_f_full),
+        .rx_fifo_wr_en (rx_f_wr_en),
+        .rx_fifo_din   (rx_f_din)
+    );
+
+    fifo_generator_0 u_rx_fifo (
+        .clk   (clk),
+        .srst  (rst),
+        .din   (rx_f_din),
+        .wr_en (rx_f_wr_en),
+        .rd_en (rx_f_rd_en),
+        .dout  (rx_f_dout),
+        .full  (rx_f_full),
+        .empty (rx_f_empty)
+    );
+
+    slave_read_fsm #(
+        .DATA_WIDTH (DATA_WIDTH),
+        .EMPTY_W    (EMPTY_W)
+    ) u_slave_read_fsm (
+        .clk             (clk),
+        .rst             (rst),
+        .fifo_empty      (rx_f_empty),
+        .fifo_rd_en      (rx_f_rd_en),
+        .fifo_rdata      (f_rdata),
+        .fifo_sop        (f_sop),
+        .fifo_eop        (f_eop),
+        .fifo_empty_bits (f_empty_bits),
+        .slave_read_req  (slave_read_req),
+        .rx_payload_data (rx_payload_data),
+        .rx_data_valid   (rx_data_valid),
+        .rx_sop          (rx_sop),
+        .rx_eop          (rx_eop),
+        .rx_empty        (rx_empty)
+    );
+
+endmodule
+
+
+// ============================================================================
+// Module 7: system_top
+// Description: Top-level system wrapper interconnecting Master and Slave (image_7a9a65.png)
+// ============================================================================
+module system_top #(
+    parameter TOTAL_BYTES = 16384,
+    parameter BUS_BYTES   = 64,
+    parameter PACKET_SIZE = 256
+)(
+    input  wire         clk,
+    input  wire         rst,
+    input  wire         start,
+    
+    output wire         master_done,
+    input  wire         slave_read_req,
+    
+    output wire [511:0] rx_payload_data,
+    output wire         rx_data_valid,
+    output wire         rx_sop,
+    output wire         rx_eop,
+    output wire [5:0]   rx_empty,
+    output wire [15:0]  beat_count
+);
+
+    wire         bus_ready;
+    wire         bus_valid;
+    wire [511:0] bus_data;
+    wire         bus_sop;
+    wire         bus_eop;
+    wire [5:0]   bus_empty;
+    wire [15:0]  tx_beat_count;
+
+    master_top #(
+        .TOTAL_BYTES (TOTAL_BYTES),
+        .BUS_BYTES   (BUS_BYTES),
+        .PACKET_SIZE (PACKET_SIZE)
+    ) u_master_top (
+        .clk         (clk),
+        .rst         (rst),
+        .start       (start),
+        .master_done (master_done),
+        .ready       (bus_ready),
+        .valid       (bus_valid),
+        .data        (bus_data),
+        .sop         (bus_sop),
+        .eop         (bus_eop),
+        .empty       (bus_empty),
+        .beat_count  (tx_beat_count)
+    );
+
+    slave_top #(
+        .DATA_WIDTH (512),
+        .EMPTY_W    (6)
+    ) u_slave_top (
+        .clk             (clk),
+        .rst             (rst),
+        .valid           (bus_valid),
+        .data            (bus_data),
+        .sop             (bus_sop),
+        .eop             (bus_eop),
+        .empty           (bus_empty),
+        .ready           (bus_ready),
+        .slave_read_req  (slave_read_req),
+        .rx_payload_data (rx_payload_data),
+        .rx_data_valid   (rx_data_valid),
+        .rx_sop          (rx_sop),
+        .rx_eop          (rx_eop),
+        .rx_empty        (rx_empty),
+        .beat_count      (beat_count)
+    );
+
+endmodule
+
+
+// ============================================================================
+// Testbench: tb_system_top
+// ============================================================================
+module tb_system_top;
+
+    localparam CLK_PERIOD = 10;
+
+    reg clk;
+    reg rst;
+    reg start;
+    reg slave_read_req;
+
+    wire         master_done;
+    wire [511:0] rx_payload_data;
+    wire         rx_data_valid;
+    wire         rx_sop;
+    wire         rx_eop;
+    wire [5:0]   rx_empty;
+    wire [15:0]  beat_count;
+
+    integer packet_count = 0;
+    integer run_count    = 0;
+
+    system_top #(
+        .TOTAL_BYTES (16384),
+        .BUS_BYTES   (64),
+        .PACKET_SIZE (64)
+    ) dut (
+        .clk             (clk),
+        .rst             (rst),
+        .start           (start),
+        .master_done     (master_done),
+        .slave_read_req  (slave_read_req),
+        .rx_payload_data (rx_payload_data),
+        .rx_data_valid   (rx_data_valid),
+        .rx_sop          (rx_sop),
+        .rx_eop          (rx_eop),
+        .rx_empty        (rx_empty),
+        .beat_count      (beat_count)
+    );
+
+    initial begin
+        clk = 0;
+        forever #(CLK_PERIOD/2) clk = ~clk;
+    end
+
+    always @(posedge clk) begin
+        if (rx_data_valid && rx_eop) begin
+            packet_count <= packet_count + 1;
+            $display("[TIME=%0t ns] Packet %0d Received | EOP Detected | Empty Bytes = %0d", 
+                     $time, packet_count + 1, rx_empty);
+        end
+    end
+
+    initial begin
+        rst            = 1;
+        start          = 0;
+        slave_read_req = 0;
+        run_count      = 0;
+
+        #50;
+        rst = 0;
+
+        repeat(3) begin
+            run_count = run_count + 1;
+            $display("\n=== RUN #%0d STARTING ===", run_count);
+
+            packet_count = 0;
+            #100;
+            
+            @(posedge clk);
+            start          <= 1'b1;
+            slave_read_req <= 1'b1;
+            @(posedge clk);
+            start          <= 1'b0;
+
+            wait(master_done == 1);
+
+            #100;
+            slave_read_req <= 1'b0;
+
+            $display("=== RUN #%0d FINISHED - Packets Received = %0d ===", run_count, packet_count);
+            #1000;
+        end
+
+        $display("\n=== ALL TEST RUNS PASSED ===");
+        $finish;
+    end
+
+endmodule

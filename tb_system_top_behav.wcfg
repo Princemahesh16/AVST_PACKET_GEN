@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="tb_system_top_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="glbl" />
+            <top_module name="tb_system_top" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="0.000 ns"></ZoomStartTime>
+      <ZoomEndTime time="1,000.000 ns"></ZoomEndTime>
+      <Cursor1Time time="208.034 ns"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="206"></NameColumnWidth>
+      <ValueColumnWidth column_width="72"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="74" />
+   <wvobject type="divider" fp_name="divider1284">
+      <obj_property name="label">1. TESTBENCH CONTROL</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/CLK_PERIOD" type="array">
+      <obj_property name="ElementShortName">CLK_PERIOD[31:0]</obj_property>
+      <obj_property name="ObjectShortName">CLK_PERIOD[31:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/clk" type="logic">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/rst" type="logic">
+      <obj_property name="ElementShortName">rst</obj_property>
+      <obj_property name="ObjectShortName">rst</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/slave_read_req" type="logic">
+      <obj_property name="ElementShortName">slave_read_req</obj_property>
+      <obj_property name="ObjectShortName">slave_read_req</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/master_done" type="logic">
+      <obj_property name="ElementShortName">master_done</obj_property>
+      <obj_property name="ObjectShortName">master_done</obj_property>
+   </wvobject>
+   <wvobject type="divider" fp_name="divider1292">
+      <obj_property name="label">2. MASTER GENERATOR</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_master_top/TOTAL_BYTES" type="array">
+      <obj_property name="ElementShortName">TOTAL_BYTES[31:0]</obj_property>
+      <obj_property name="ObjectShortName">TOTAL_BYTES[31:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_master_top/BUS_BYTES" type="array">
+      <obj_property name="ElementShortName">BUS_BYTES[31:0]</obj_property>
+      <obj_property name="ObjectShortName">BUS_BYTES[31:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_master_top/PACKET_SIZE" type="array">
+      <obj_property name="ElementShortName">PACKET_SIZE[31:0]</obj_property>
+      <obj_property name="ObjectShortName">PACKET_SIZE[31:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_master_top/DATA_WIDTH" type="array">
+      <obj_property name="ElementShortName">DATA_WIDTH[31:0]</obj_property>
+      <obj_property name="ObjectShortName">DATA_WIDTH[31:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_master_top/EMPTY_W" type="array">
+      <obj_property name="ElementShortName">EMPTY_W[31:0]</obj_property>
+      <obj_property name="ObjectShortName">EMPTY_W[31:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_master_top/clk" type="logic">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_master_top/rst" type="logic">
+      <obj_property name="ElementShortName">rst</obj_property>
+      <obj_property name="ObjectShortName">rst</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_master_top/m_data" type="array">
+      <obj_property name="ElementShortName">m_data[511:0]</obj_property>
+      <obj_property name="ObjectShortName">m_data[511:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_master_top/m_sop" type="logic">
+      <obj_property name="ElementShortName">m_sop</obj_property>
+      <obj_property name="ObjectShortName">m_sop</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_master_top/m_eop" type="logic">
+      <obj_property name="ElementShortName">m_eop</obj_property>
+      <obj_property name="ObjectShortName">m_eop</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_master_top/m_empty" type="array">
+      <obj_property name="ElementShortName">m_empty[5:0]</obj_property>
+      <obj_property name="ObjectShortName">m_empty[5:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_master_top/m_valid" type="logic">
+      <obj_property name="ElementShortName">m_valid</obj_property>
+      <obj_property name="ObjectShortName">m_valid</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_master_top/m_fifo_wr_en" type="logic">
+      <obj_property name="ElementShortName">m_fifo_wr_en</obj_property>
+      <obj_property name="ObjectShortName">m_fifo_wr_en</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_master_top/beat_count" type="array">
+      <obj_property name="ElementShortName">beat_count[15:0]</obj_property>
+      <obj_property name="ObjectShortName">beat_count[15:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_master_top/master_done" type="logic">
+      <obj_property name="ElementShortName">master_done</obj_property>
+      <obj_property name="ObjectShortName">master_done</obj_property>
+   </wvobject>
+   <wvobject type="divider" fp_name="divider1308">
+      <obj_property name="label">3. TX FIFO BUFFER</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_master_top/fifo_din" type="array">
+      <obj_property name="ElementShortName">fifo_din[520:0]</obj_property>
+      <obj_property name="ObjectShortName">fifo_din[520:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_master_top/f_full" type="logic">
+      <obj_property name="ElementShortName">f_full</obj_property>
+      <obj_property name="ObjectShortName">f_full</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_master_top/f_empty" type="logic">
+      <obj_property name="ElementShortName">f_empty</obj_property>
+      <obj_property name="ObjectShortName">f_empty</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_master_top/f_rd_en" type="logic">
+      <obj_property name="ElementShortName">f_rd_en</obj_property>
+      <obj_property name="ObjectShortName">f_rd_en</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_master_top/fifo_dout" type="array">
+      <obj_property name="ElementShortName">fifo_dout[520:0]</obj_property>
+      <obj_property name="ObjectShortName">fifo_dout[520:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_master_top/f_rdata" type="array">
+      <obj_property name="ElementShortName">f_rdata[511:0]</obj_property>
+      <obj_property name="ObjectShortName">f_rdata[511:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_master_top/f_sop" type="logic">
+      <obj_property name="ElementShortName">f_sop</obj_property>
+      <obj_property name="ObjectShortName">f_sop</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_master_top/f_eop" type="logic">
+      <obj_property name="ElementShortName">f_eop</obj_property>
+      <obj_property name="ObjectShortName">f_eop</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_master_top/f_empty_bits" type="array">
+      <obj_property name="ElementShortName">f_empty_bits[5:0]</obj_property>
+      <obj_property name="ObjectShortName">f_empty_bits[5:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject type="divider" fp_name="divider1318">
+      <obj_property name="label">4. INTERCONNECT BUS</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_master_top/ready" type="logic">
+      <obj_property name="ElementShortName">ready</obj_property>
+      <obj_property name="ObjectShortName">ready</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_master_top/valid" type="logic">
+      <obj_property name="ElementShortName">valid</obj_property>
+      <obj_property name="ObjectShortName">valid</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_master_top/data" type="array">
+      <obj_property name="ElementShortName">data[511:0]</obj_property>
+      <obj_property name="ObjectShortName">data[511:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_master_top/sop" type="logic">
+      <obj_property name="ElementShortName">sop</obj_property>
+      <obj_property name="ObjectShortName">sop</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_master_top/eop" type="logic">
+      <obj_property name="ElementShortName">eop</obj_property>
+      <obj_property name="ObjectShortName">eop</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_master_top/empty" type="array">
+      <obj_property name="ElementShortName">empty[5:0]</obj_property>
+      <obj_property name="ObjectShortName">empty[5:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject type="divider" fp_name="divider1325">
+      <obj_property name="label">5. SLAVE RX &amp; FIFO</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_slave_top/DATA_WIDTH" type="array">
+      <obj_property name="ElementShortName">DATA_WIDTH[31:0]</obj_property>
+      <obj_property name="ObjectShortName">DATA_WIDTH[31:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_slave_top/EMPTY_W" type="array">
+      <obj_property name="ElementShortName">EMPTY_W[31:0]</obj_property>
+      <obj_property name="ObjectShortName">EMPTY_W[31:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_slave_top/clk" type="logic">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_slave_top/rst" type="logic">
+      <obj_property name="ElementShortName">rst</obj_property>
+      <obj_property name="ObjectShortName">rst</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_slave_top/ready" type="logic">
+      <obj_property name="ElementShortName">ready</obj_property>
+      <obj_property name="ObjectShortName">ready</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_slave_top/valid" type="logic">
+      <obj_property name="ElementShortName">valid</obj_property>
+      <obj_property name="ObjectShortName">valid</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_slave_top/data" type="array">
+      <obj_property name="ElementShortName">data[511:0]</obj_property>
+      <obj_property name="ObjectShortName">data[511:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_slave_top/sop" type="logic">
+      <obj_property name="ElementShortName">sop</obj_property>
+      <obj_property name="ObjectShortName">sop</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_slave_top/eop" type="logic">
+      <obj_property name="ElementShortName">eop</obj_property>
+      <obj_property name="ObjectShortName">eop</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_slave_top/empty" type="array">
+      <obj_property name="ElementShortName">empty[5:0]</obj_property>
+      <obj_property name="ObjectShortName">empty[5:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_slave_top/rx_f_din" type="array">
+      <obj_property name="ElementShortName">rx_f_din[520:0]</obj_property>
+      <obj_property name="ObjectShortName">rx_f_din[520:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_slave_top/rx_f_full" type="logic">
+      <obj_property name="ElementShortName">rx_f_full</obj_property>
+      <obj_property name="ObjectShortName">rx_f_full</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_slave_top/rx_f_wr_en" type="logic">
+      <obj_property name="ElementShortName">rx_f_wr_en</obj_property>
+      <obj_property name="ObjectShortName">rx_f_wr_en</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_slave_top/rx_f_empty" type="logic">
+      <obj_property name="ElementShortName">rx_f_empty</obj_property>
+      <obj_property name="ObjectShortName">rx_f_empty</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_slave_top/rx_f_rd_en" type="logic">
+      <obj_property name="ElementShortName">rx_f_rd_en</obj_property>
+      <obj_property name="ObjectShortName">rx_f_rd_en</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_slave_top/rx_f_dout" type="array">
+      <obj_property name="ElementShortName">rx_f_dout[520:0]</obj_property>
+      <obj_property name="ObjectShortName">rx_f_dout[520:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_slave_top/f_rdata" type="array">
+      <obj_property name="ElementShortName">f_rdata[511:0]</obj_property>
+      <obj_property name="ObjectShortName">f_rdata[511:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_slave_top/f_sop" type="logic">
+      <obj_property name="ElementShortName">f_sop</obj_property>
+      <obj_property name="ObjectShortName">f_sop</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_slave_top/f_eop" type="logic">
+      <obj_property name="ElementShortName">f_eop</obj_property>
+      <obj_property name="ObjectShortName">f_eop</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_slave_top/f_empty_bits" type="array">
+      <obj_property name="ElementShortName">f_empty_bits[5:0]</obj_property>
+      <obj_property name="ObjectShortName">f_empty_bits[5:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject type="divider" fp_name="divider1346">
+      <obj_property name="label">6. SLAVE OUTPUT</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_slave_top/slave_read_req" type="logic">
+      <obj_property name="ElementShortName">slave_read_req</obj_property>
+      <obj_property name="ObjectShortName">slave_read_req</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_slave_top/rx_data_valid" type="logic">
+      <obj_property name="ElementShortName">rx_data_valid</obj_property>
+      <obj_property name="ObjectShortName">rx_data_valid</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_slave_top/rx_payload_data" type="array">
+      <obj_property name="ElementShortName">rx_payload_data[511:0]</obj_property>
+      <obj_property name="ObjectShortName">rx_payload_data[511:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_slave_top/rx_sop" type="logic">
+      <obj_property name="ElementShortName">rx_sop</obj_property>
+      <obj_property name="ObjectShortName">rx_sop</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_slave_top/rx_eop" type="logic">
+      <obj_property name="ElementShortName">rx_eop</obj_property>
+      <obj_property name="ObjectShortName">rx_eop</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_slave_top/rx_empty" type="array">
+      <obj_property name="ElementShortName">rx_empty[5:0]</obj_property>
+      <obj_property name="ObjectShortName">rx_empty[5:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/dut/u_slave_top/beat_count" type="array">
+      <obj_property name="ElementShortName">beat_count[15:0]</obj_property>
+      <obj_property name="ObjectShortName">beat_count[15:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/rx_payload_data" type="array">
+      <obj_property name="ElementShortName">rx_payload_data[511:0]</obj_property>
+      <obj_property name="ObjectShortName">rx_payload_data[511:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/rx_data_valid" type="logic">
+      <obj_property name="ElementShortName">rx_data_valid</obj_property>
+      <obj_property name="ObjectShortName">rx_data_valid</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/rx_sop" type="logic">
+      <obj_property name="ElementShortName">rx_sop</obj_property>
+      <obj_property name="ObjectShortName">rx_sop</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/rx_eop" type="logic">
+      <obj_property name="ElementShortName">rx_eop</obj_property>
+      <obj_property name="ObjectShortName">rx_eop</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/rx_empty" type="array">
+      <obj_property name="ElementShortName">rx_empty[5:0]</obj_property>
+      <obj_property name="ObjectShortName">rx_empty[5:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_system_top/beat_count" type="array">
+      <obj_property name="ElementShortName">beat_count[15:0]</obj_property>
+      <obj_property name="ObjectShortName">beat_count[15:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+</wave_config>

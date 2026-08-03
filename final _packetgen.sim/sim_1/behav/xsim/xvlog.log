@@ -1,0 +1,18 @@
+INFO: [VRFC 10-2263] Analyzing Verilog file "D:/INTERNSHIP/3_final _packetgen_ASSIGN/final _packetgen.gen/sources_1/ip/fifo_generator_0/sim/fifo_generator_0.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module fifo_generator_0
+INFO: [VRFC 10-2263] Analyzing Verilog file "D:/INTERNSHIP/3_final _packetgen_ASSIGN/final _packetgen.srcs/sources_1/new/master_fsm.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module master_fsm
+INFO: [VRFC 10-2263] Analyzing Verilog file "D:/INTERNSHIP/3_final _packetgen_ASSIGN/final _packetgen.srcs/sources_1/new/master_top.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module master_top
+INFO: [VRFC 10-2263] Analyzing Verilog file "D:/INTERNSHIP/3_final _packetgen_ASSIGN/final _packetgen.srcs/sources_1/new/master_tx_read_fsm.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module master_tx_read_fsm
+INFO: [VRFC 10-2263] Analyzing Verilog file "D:/INTERNSHIP/3_final _packetgen_ASSIGN/final _packetgen.srcs/sources_1/new/slave_read_fsm.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module slave_read_fsm
+INFO: [VRFC 10-2263] Analyzing Verilog file "D:/INTERNSHIP/3_final _packetgen_ASSIGN/final _packetgen.srcs/sources_1/new/slave_rx_write_fsm.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module slave_rx_write_fsm
+INFO: [VRFC 10-2263] Analyzing Verilog file "D:/INTERNSHIP/3_final _packetgen_ASSIGN/final _packetgen.srcs/sources_1/new/slave_top.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module slave_top
+INFO: [VRFC 10-2263] Analyzing Verilog file "D:/INTERNSHIP/3_final _packetgen_ASSIGN/final _packetgen.srcs/sources_1/new/system_top.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module system_top
+INFO: [VRFC 10-2263] Analyzing Verilog file "D:/INTERNSHIP/3_final _packetgen_ASSIGN/final _packetgen.srcs/sources_1/new/tb_system_top.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module tb_system_top
